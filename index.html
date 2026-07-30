@@ -48,6 +48,7 @@
   .toggle-mode button.on { background:#0d9488; color:#fff; }
   .manual, .calc { display:none; } .manual.show,.calc.show{display:block;}
   .final { background:#0d3b3b; border:1px solid #2dd4bf; border-radius:8px; padding:8px 12px; margin-top:10px; color:#5eead4; font-weight:700; }
+  .final.rej { background:#3b1e1e; border-color:#f87171; color:#fca5a5; }
   .hint { font-size:.8rem; color:#94a3b8; font-style:italic; }
   table { width:100%; border-collapse:collapse; margin:12px 0; font-size:.85rem; }
   th,td { border:1px solid #2b3a5c; padding:7px 9px; text-align:left; }
@@ -115,10 +116,12 @@
 
   <h3>Why they all agree (usually)</h3>
   <div class="card">
-    <p>For a single normal project, all four rules give the same accept/reject answer. That's your sanity check: if NPV says accept, IRR should beat the cost of capital and PI should exceed 1.</p>
+    <p>For a single normal project, all four discounted rules give the same accept/reject answer. That's your sanity check:</p>
     <ul>
-      <li>NPV &gt; 0  ⟺  IRR &gt; r  ⟺  PI &gt; 1</li>
+      <li>NPV &gt; 0  ⟺  IRR &gt; r  ⟺  PI &gt; 1  → accept</li>
+      <li>NPV &lt; 0  ⟺  IRR &lt; r  ⟺  PI &lt; 1  → reject</li>
     </ul>
+    <p class="hint">In this packet, Project 2 fails all three (NPV negative, IRR below 10%, PI below 1). That is exactly the pattern to recognize.</p>
   </div>
 
   <h3>Common traps in this packet</h3>
@@ -126,7 +129,7 @@
     <ul>
       <li class="warn">Entering the cost (Year 0) as a positive number. It's an outflow → negative.</li>
       <li class="warn">Comparing IRR to zero. Compare it to the cost of capital.</li>
-      <li class="warn">Forgetting to clear cash-flow registers between projects: 2ND → CE|C (CF, 2ND, CLR WORK).</li>
+      <li class="warn">Forgetting to clear cash-flow registers between projects: CF, 2ND, CLR WORK.</li>
       <li class="warn">Using PI rule "greater than 0." The PI cutoff is 1, not 0.</li>
       <li class="warn">Payback: stopping at the whole year instead of taking the fraction of the final year.</li>
     </ul>
@@ -157,31 +160,33 @@
 <!-- ============ PROJECT 1 ============ -->
 <section id="p1">
   <h2>Project 1 <span class="hint">cost of capital = 8%</span></h2>
-  <div class="cfbox">Year 0: -165,000
-Year 1:   63,120
-Year 2:   70,800
-Year 3:   91,080</div>
+  <div class="cfbox">Year 0: -20,000
+Year 1:   4,000
+Year 2:   8,000
+Year 3:  10,000
+Year 4:   3,000</div>
   <div id="p1-probs"></div>
 </section>
 
 <!-- ============ PROJECT 2 ============ -->
 <section id="p2">
   <h2>Project 2 <span class="hint">cost of capital = 10%</span></h2>
-  <div class="cfbox">Year 0: -18,000
-Year 1:  10,400
-Year 2:   7,600
-Year 3:   3,700
-Year 4:   3,700</div>
+  <div class="cfbox">Year 0: -20,000
+Year 1:   4,000
+Year 2:   3,000
+Year 3:   8,000
+Year 4:  10,000</div>
   <div id="p2-probs"></div>
 </section>
 
 <!-- ============ PROJECT 3 ============ -->
 <section id="p3">
   <h2>Project 3 <span class="hint">cost of capital = 10%</span></h2>
-  <div class="cfbox">Year 0: -8,000
-Year 1:  4,000
-Year 2:  3,000
-Year 3:  8,000</div>
+  <div class="cfbox">Year 0: -20,000
+Year 1:  10,000
+Year 2:   8,000
+Year 3:   4,000
+Year 4:   3,000</div>
   <div id="p3-probs"></div>
 </section>
 
@@ -190,7 +195,7 @@ Year 3:  8,000</div>
   <h2>Quiz Mode <span class="tag pi">predict first</span></h2>
   <div id="quiz-start" class="card">
     <p>Questions pulled straight from the packet. Enter your numeric answer or pick the rule, then submit. No peeking until you commit.</p>
-    <p class="hint">Round NPV/PI to whole steps shown. Numeric answers accept a small tolerance.</p>
+    <p class="hint">Numeric answers accept a small tolerance so rounding won't sink you.</p>
     <div class="toggle-mode" style="margin-top:14px;">
       <button id="len10" class="on" data-n="10">Quick 10</button>
       <button id="len20" data-n="20">Full 20</button>
@@ -218,178 +223,187 @@ Year 3:  8,000</div>
 </div>
 
 <script>
-// ================= PROBLEM DATA =================
+// ================= PROBLEM DATA (CORRECT cash flows from uploaded images) =================
 const problems = {
   p1: [
-    {q:"NPV (r = 8%)", tag:"npv", ans:"$26,446.27 — ACCEPT",
+    {q:"NPV (r = 8%)", tag:"npv", ans:"$705.83 — ACCEPT",
      manual:[
        "Discount each inflow to today at 8%:",
-       "Y1: 63,120 ÷ 1.08¹ = 58,444.44",
-       "Y2: 70,800 ÷ 1.08² = 60,699.59",
-       "Y3: 91,080 ÷ 1.08³ = 72,302.24",
-       "Sum of PV inflows = 191,446.27",
-       "NPV = 191,446.27 − 165,000 = 26,446.27",
-       "NPV > 0 → ACCEPT."],
+       "Y1: 4,000 ÷ 1.08¹ = 3,703.70",
+       "Y2: 8,000 ÷ 1.08² = 6,858.71",
+       "Y3: 10,000 ÷ 1.08³ = 7,938.32",
+       "Y4: 3,000 ÷ 1.08⁴ = 2,205.09",
+       "Sum of PV inflows = 20,705.83",
+       "NPV = 20,705.83 − 20,000 = 705.83",
+       "NPV > 0 → ACCEPT (matches your handwritten $705.82)."],
      calc:[
        "CF  2ND CLR WORK       (clear)",
-       "CF0 = -165000  ENTER  ↓",
-       "C01 = 63120  ENTER  ↓  F01=1  ↓",
-       "C02 = 70800  ENTER  ↓  F02=1  ↓",
-       "C03 = 91080  ENTER  ↓  F03=1  ↓",
-       "NPV   I = 8  ENTER  ↓",
-       "CPT  →  26,446.27"],
-     final:"NPV = $26,446.27 → ACCEPT (positive)"},
+       "CF0 = -20000  ENTER  ↓",
+       "C01 = 4000   ENTER ↓ F01=1 ↓",
+       "C02 = 8000   ENTER ↓ F02=1 ↓",
+       "C03 = 10000  ENTER ↓ F03=1 ↓",
+       "C04 = 3000   ENTER ↓ F04=1 ↓",
+       "NPV  I = 8  ENTER ↓  CPT → 705.83"],
+     final:"NPV = $705.83 → ACCEPT (positive)"},
 
-    {q:"IRR", tag:"irr", ans:"16.13% — ACCEPT",
+    {q:"IRR", tag:"irr", ans:"9.56% — ACCEPT",
      manual:[
        "IRR is the rate that makes NPV = 0.",
-       "Solve by trial or calculator: IRR ≈ 16.1322%.",
+       "Calculator: IRR ≈ 9.5644%.",
        "Compare to cost of capital 8%.",
-       "16.13% > 8% → ACCEPT."],
+       "9.56% > 8% → ACCEPT (barely, since NPV is only $705)."],
      calc:[
-       "(after entering the cash flows as above)",
-       "IRR   CPT  →  16.1322",
-       "Compare: 16.13% > 8%  → ACCEPT"],
-     final:"IRR = 16.13% > 8% → ACCEPT"},
+       "(after entering the cash flows above)",
+       "IRR  CPT  →  9.5644",
+       "9.56% > 8% → ACCEPT"],
+     final:"IRR = 9.56% > 8% → ACCEPT"},
 
-    {q:"Payback Period", tag:"pb", ans:"2.34 years",
+    {q:"Payback Period", tag:"pb", ans:"2.80 years",
      manual:[
-       "Cost to recover = 165,000.",
-       "After Y1: 63,120 recovered. Remaining 101,880.",
-       "After Y2: 63,120 + 70,800 = 133,920. Remaining 31,080.",
-       "Y3 brings in 91,080, so fraction = 31,080 ÷ 91,080 = 0.3412.",
-       "Payback = 2 + 0.3412 = 2.34 years.",
-       "Accept if under the firm's cutoff."],
+       "Cost to recover = 20,000.",
+       "After Y1: 4,000 recovered. Remaining 16,000.",
+       "After Y2: 4,000 + 8,000 = 12,000. Remaining 8,000.",
+       "Y3 brings in 10,000 → fraction = 8,000 ÷ 10,000 = 0.80.",
+       "Payback = 2 + 0.80 = 2.80 years."],
      calc:[
-       "No TVM function — do it by hand:",
-       "165000 − 63120 = 101880",
-       "101880 − 70800 = 31080",
-       "31080 ÷ 91080 = 0.3412",
-       "2 + 0.3412 = 2.34 yrs"],
-     final:"Payback = 2.34 years"},
+       "No TVM key — by hand:",
+       "20000 − 4000 = 16000",
+       "16000 − 8000 = 8000",
+       "8000 ÷ 10000 = 0.80",
+       "2 + 0.80 = 2.80 yrs"],
+     final:"Payback = 2.80 years"},
 
-    {q:"PI — Profitability Index", tag:"pi", ans:"1.16 — ACCEPT",
+    {q:"PI — Profitability Index", tag:"pi", ans:"1.04 — ACCEPT",
      manual:[
        "PI = PV of inflows ÷ initial cost.",
-       "PV of inflows = 191,446.27 (from NPV step).",
-       "PI = 191,446.27 ÷ 165,000 = 1.1603.",
-       "Shortcut: PI = 1 + NPV/cost = 1 + 26,446.27/165,000 = 1.16.",
+       "PV of inflows = 20,705.83 (from NPV step).",
+       "PI = 20,705.83 ÷ 20,000 = 1.0353.",
+       "Shortcut: 1 + 705.83/20,000 = 1.04.",
        "PI > 1 → ACCEPT."],
      calc:[
-       "191446.27 ÷ 165000 = 1.1603",
-       "or 1 + (26446.27 ÷ 165000) = 1.16"],
-     final:"PI = 1.16 → ACCEPT (above 1)"}
+       "20705.83 ÷ 20000 = 1.0353",
+       "or 1 + (705.83 ÷ 20000) = 1.04"],
+     final:"PI = 1.04 → ACCEPT (above 1)"}
   ],
 
   p2: [
-    {q:"NPV (r = 10%)", tag:"npv", ans:"$3,042.55 — ACCEPT",
-     manual:[
-       "Discount each inflow at 10%:",
-       "Y1: 10,400 ÷ 1.10¹ = 9,454.55",
-       "Y2:  7,600 ÷ 1.10² = 6,280.99",
-       "Y3:  3,700 ÷ 1.10³ = 2,779.86",
-       "Y4:  3,700 ÷ 1.10⁴ = 2,527.15",
-       "Sum PV inflows = 21,042.55",
-       "NPV = 21,042.55 − 18,000 = 3,042.55 → ACCEPT."],
-     calc:[
-       "CF  2ND CLR WORK",
-       "CF0 = -18000  ENTER  ↓",
-       "C01 = 10400  ENTER ↓ F01=1 ↓",
-       "C02 = 7600   ENTER ↓ F02=1 ↓",
-       "C03 = 3700   ENTER ↓ F03=1 ↓",
-       "C04 = 3700   ENTER ↓ F04=1 ↓",
-       "NPV  I = 10  ENTER ↓  CPT → 3,042.55"],
-     final:"NPV = $3,042.55 → ACCEPT"},
-
-    {q:"IRR", tag:"irr", ans:"19.53% — ACCEPT",
-     manual:[
-       "Rate making NPV = 0.",
-       "Calculator: IRR ≈ 19.5272%.",
-       "19.53% > 10% cost of capital → ACCEPT."],
-     calc:[
-       "(cash flows already entered)",
-       "IRR  CPT  →  19.5272",
-       "19.53% > 10% → ACCEPT"],
-     final:"IRR = 19.53% > 10% → ACCEPT"},
-
-    {q:"Payback Period", tag:"pb", ans:"2.00 years",
-     manual:[
-       "Cost = 18,000.",
-       "After Y1: 10,400. Remaining 7,600.",
-       "After Y2: 10,400 + 7,600 = 18,000 exactly.",
-       "Cost fully recovered at end of Y2.",
-       "Payback = 2.00 years."],
-     calc:[
-       "18000 − 10400 = 7600",
-       "7600 − 7600 = 0  (exact at Y2)",
-       "Payback = 2.00 yrs"],
-     final:"Payback = 2.00 years (exact)"},
-
-    {q:"PI — Profitability Index", tag:"pi", ans:"1.17 — ACCEPT",
-     manual:[
-       "PV inflows = 21,042.55.",
-       "PI = 21,042.55 ÷ 18,000 = 1.1690.",
-       "Shortcut: 1 + 3,042.55/18,000 = 1.17.",
-       "PI > 1 → ACCEPT."],
-     calc:[
-       "21042.55 ÷ 18000 = 1.1690",
-       "or 1 + (3042.55 ÷ 18000) = 1.17"],
-     final:"PI = 1.17 → ACCEPT"}
-  ],
-
-  p3: [
-    {q:"NPV (r = 10%)", tag:"npv", ans:"$4,126.22 — ACCEPT",
+    {q:"NPV (r = 10%)", tag:"npv", ans:"−$1,043.64 — REJECT",
      manual:[
        "Discount each inflow at 10%:",
        "Y1: 4,000 ÷ 1.10¹ = 3,636.36",
        "Y2: 3,000 ÷ 1.10² = 2,479.34",
        "Y3: 8,000 ÷ 1.10³ = 6,010.52",
-       "Sum PV inflows = 12,126.22",
-       "NPV = 12,126.22 − 8,000 = 4,126.22 → ACCEPT."],
+       "Y4: 10,000 ÷ 1.10⁴ = 6,830.13",
+       "Sum PV inflows = 18,956.36",
+       "NPV = 18,956.36 − 20,000 = −1,043.64",
+       "NPV < 0 → REJECT. Same total cash as Project 3 but back-loaded, so discounting at 10% kills it."],
      calc:[
        "CF  2ND CLR WORK",
-       "CF0 = -8000  ENTER ↓",
-       "C01 = 4000  ENTER ↓ F01=1 ↓",
-       "C02 = 3000  ENTER ↓ F02=1 ↓",
-       "C03 = 8000  ENTER ↓ F03=1 ↓",
-       "NPV  I = 10  ENTER ↓  CPT → 4,126.22"],
-     final:"NPV = $4,126.22 → ACCEPT"},
+       "CF0 = -20000  ENTER  ↓",
+       "C01 = 4000   ENTER ↓ F01=1 ↓",
+       "C02 = 3000   ENTER ↓ F02=1 ↓",
+       "C03 = 8000   ENTER ↓ F03=1 ↓",
+       "C04 = 10000  ENTER ↓ F04=1 ↓",
+       "NPV  I = 10  ENTER ↓  CPT → -1,043.64"],
+     final:"NPV = −$1,043.64 → REJECT (negative)"},
 
-    {q:"IRR", tag:"irr", ans:"33.84% — ACCEPT",
+    {q:"IRR", tag:"irr", ans:"7.96% — REJECT",
      manual:[
        "Rate making NPV = 0.",
-       "Calculator: IRR ≈ 33.8417%.",
-       "33.84% > 10% → ACCEPT."],
+       "Calculator: IRR ≈ 7.9561%.",
+       "7.96% < 10% cost of capital → REJECT.",
+       "Consistent with the negative NPV."],
      calc:[
        "(cash flows already entered)",
-       "IRR  CPT  →  33.8417",
-       "33.84% > 10% → ACCEPT"],
-     final:"IRR = 33.84% > 10% → ACCEPT"},
+       "IRR  CPT  →  7.9561",
+       "7.96% < 10% → REJECT"],
+     final:"IRR = 7.96% < 10% → REJECT"},
 
-    {q:"Payback Period", tag:"pb", ans:"2.13 years",
+    {q:"Payback Period", tag:"pb", ans:"3.50 years",
      manual:[
-       "Cost = 8,000.",
-       "After Y1: 4,000. Remaining 4,000.",
-       "After Y2: 4,000 + 3,000 = 7,000. Remaining 1,000.",
-       "Y3 brings 8,000, fraction = 1,000 ÷ 8,000 = 0.125.",
-       "Payback = 2 + 0.125 = 2.13 years."],
+       "Cost = 20,000.",
+       "After Y1: 4,000. Remaining 16,000.",
+       "After Y2: 4,000 + 3,000 = 7,000. Remaining 13,000.",
+       "After Y3: 7,000 + 8,000 = 15,000. Remaining 5,000.",
+       "Y4 brings 10,000 → fraction = 5,000 ÷ 10,000 = 0.50.",
+       "Payback = 3 + 0.50 = 3.50 years."],
      calc:[
-       "8000 − 4000 = 4000",
-       "4000 − 3000 = 1000",
-       "1000 ÷ 8000 = 0.125",
-       "2 + 0.125 = 2.13 yrs"],
-     final:"Payback = 2.13 years"},
+       "20000 − 4000 = 16000",
+       "16000 − 3000 = 13000",
+       "13000 − 8000 = 5000",
+       "5000 ÷ 10000 = 0.50",
+       "3 + 0.50 = 3.50 yrs"],
+     final:"Payback = 3.50 years"},
 
-    {q:"PI — Profitability Index", tag:"pi", ans:"1.52 — ACCEPT",
+    {q:"PI — Profitability Index", tag:"pi", ans:"0.95 — REJECT",
      manual:[
-       "PV inflows = 12,126.22.",
-       "PI = 12,126.22 ÷ 8,000 = 1.5158.",
-       "Shortcut: 1 + 4,126.22/8,000 = 1.52.",
-       "PI > 1 → ACCEPT."],
+       "PV inflows = 18,956.36.",
+       "PI = 18,956.36 ÷ 20,000 = 0.9478.",
+       "Shortcut: 1 + (−1,043.64)/20,000 = 0.95.",
+       "PI < 1 → REJECT."],
      calc:[
-       "12126.22 ÷ 8000 = 1.5158",
-       "or 1 + (4126.22 ÷ 8000) = 1.52"],
-     final:"PI = 1.52 → ACCEPT"}
+       "18956.36 ÷ 20000 = 0.9478",
+       "or 1 + (-1043.64 ÷ 20000) = 0.95"],
+     final:"PI = 0.95 → REJECT (below 1)"}
+  ],
+
+  p3: [
+    {q:"NPV (r = 10%)", tag:"npv", ans:"$756.78 — ACCEPT",
+     manual:[
+       "Discount each inflow at 10%:",
+       "Y1: 10,000 ÷ 1.10¹ = 9,090.91",
+       "Y2:  8,000 ÷ 1.10² = 6,611.57",
+       "Y3:  4,000 ÷ 1.10³ = 3,005.26",
+       "Y4:  3,000 ÷ 1.10⁴ = 2,049.04",
+       "Sum PV inflows = 20,756.78",
+       "NPV = 20,756.78 − 20,000 = 756.78 → ACCEPT.",
+       "Same total cash as Project 2 but front-loaded, so it wins."],
+     calc:[
+       "CF  2ND CLR WORK",
+       "CF0 = -20000  ENTER  ↓",
+       "C01 = 10000  ENTER ↓ F01=1 ↓",
+       "C02 = 8000   ENTER ↓ F02=1 ↓",
+       "C03 = 4000   ENTER ↓ F03=1 ↓",
+       "C04 = 3000   ENTER ↓ F04=1 ↓",
+       "NPV  I = 10  ENTER ↓  CPT → 756.78"],
+     final:"NPV = $756.78 → ACCEPT"},
+
+    {q:"IRR", tag:"irr", ans:"12.18% — ACCEPT",
+     manual:[
+       "Rate making NPV = 0.",
+       "Calculator: IRR ≈ 12.1774%.",
+       "12.18% > 10% → ACCEPT."],
+     calc:[
+       "(cash flows already entered)",
+       "IRR  CPT  →  12.1774",
+       "12.18% > 10% → ACCEPT"],
+     final:"IRR = 12.18% > 10% → ACCEPT"},
+
+    {q:"Payback Period", tag:"pb", ans:"2.50 years",
+     manual:[
+       "Cost = 20,000.",
+       "After Y1: 10,000. Remaining 10,000.",
+       "After Y2: 10,000 + 8,000 = 18,000. Remaining 2,000.",
+       "Y3 brings 4,000 → fraction = 2,000 ÷ 4,000 = 0.50.",
+       "Payback = 2 + 0.50 = 2.50 years."],
+     calc:[
+       "20000 − 10000 = 10000",
+       "10000 − 8000 = 2000",
+       "2000 ÷ 4000 = 0.50",
+       "2 + 0.50 = 2.50 yrs"],
+     final:"Payback = 2.50 years"},
+
+    {q:"PI — Profitability Index", tag:"pi", ans:"1.04 — ACCEPT",
+     manual:[
+       "PV inflows = 20,756.78.",
+       "PI = 20,756.78 ÷ 20,000 = 1.0378.",
+       "Shortcut: 1 + 756.78/20,000 = 1.04.",
+       "PI > 1 → ACCEPT.",
+       "Note: Project 3 PI (1.0378) edges out Project 1 (1.0353) — front-loaded cash is worth more."],
+     calc:[
+       "20756.78 ÷ 20000 = 1.0378",
+       "or 1 + (756.78 ÷ 20000) = 1.04"],
+     final:"PI = 1.04 → ACCEPT"}
   ]
 };
 
@@ -426,6 +440,7 @@ function renderList(key, containerId){
   const c=document.getElementById(containerId);
   problems[key].forEach(p=>{
     const div=document.createElement("div"); div.className="prob";
+    const isRej = p.final.includes("REJECT");
     div.innerHTML=`
       <div class="prob-head">
         <span class="q">${tagHtml(p.tag)}${p.q}</span>
@@ -444,7 +459,7 @@ function renderList(key, containerId){
           <h3 style="font-size:.9rem;margin:6px 0;color:#fcd34d;">TI BAII Plus keystrokes</h3>
           <div class="keys">${p.calc.join("\n")}</div>
         </div>
-        <div class="final">✓ ${p.final}</div>
+        <div class="final${isRej?' rej':''}">✓ ${p.final}</div>
       </div>`;
     div.querySelector(".prob-head").onclick=()=>{
       div.classList.toggle("open");
@@ -467,26 +482,26 @@ renderList("p3","p3-probs");
 
 // ================= QUIZ ENGINE =================
 const quizBank = [
-  // numeric NPV
-  {t:"Project 1 (r=8%): CFs −165,000 / 63,120 / 70,800 / 91,080. NPV? ($)", type:"num", a:26446, tol:60, why:"PV inflows 191,446.27 − 165,000 = $26,446.27. Accept."},
-  {t:"Project 2 (r=10%): −18,000 / 10,400 / 7,600 / 3,700 / 3,700. NPV? ($)", type:"num", a:3043, tol:60, why:"PV inflows 21,042.55 − 18,000 = $3,042.55. Accept."},
-  {t:"Project 3 (r=10%): −8,000 / 4,000 / 3,000 / 8,000. NPV? ($)", type:"num", a:4126, tol:60, why:"PV inflows 12,126.22 − 8,000 = $4,126.22. Accept."},
-  // numeric IRR
-  {t:"Project 1: IRR? (%)  CFs −165,000 / 63,120 / 70,800 / 91,080", type:"num", a:16.13, tol:0.2, why:"IRR ≈ 16.13% > 8% → accept."},
-  {t:"Project 2: IRR? (%)  −18,000 / 10,400 / 7,600 / 3,700 / 3,700", type:"num", a:19.53, tol:0.2, why:"IRR ≈ 19.53% > 10% → accept."},
-  {t:"Project 3: IRR? (%)  −8,000 / 4,000 / 3,000 / 8,000", type:"num", a:33.84, tol:0.3, why:"IRR ≈ 33.84% > 10% → accept."},
-  // numeric payback
-  {t:"Project 1: Payback period? (years)", type:"num", a:2.34, tol:0.05, why:"2 + 31,080/91,080 = 2.34 yrs."},
-  {t:"Project 2: Payback period? (years)", type:"num", a:2.00, tol:0.05, why:"10,400 + 7,600 = 18,000 exactly at Y2 → 2.00 yrs."},
-  {t:"Project 3: Payback period? (years)", type:"num", a:2.13, tol:0.05, why:"2 + 1,000/8,000 = 2.13 yrs."},
-  // numeric PI
-  {t:"Project 1: PI?  (PV inflows 191,446.27, cost 165,000)", type:"num", a:1.16, tol:0.02, why:"191,446.27 ÷ 165,000 = 1.16. Accept."},
-  {t:"Project 2: PI?  (PV inflows 21,042.55, cost 18,000)", type:"num", a:1.17, tol:0.02, why:"21,042.55 ÷ 18,000 = 1.17. Accept."},
-  {t:"Project 3: PI?  (PV inflows 12,126.22, cost 8,000)", type:"num", a:1.52, tol:0.02, why:"12,126.22 ÷ 8,000 = 1.52. Accept."},
-  // concept MC
+  // NPV
+  {t:"Project 1 (r=8%): CFs −20,000 / 4,000 / 8,000 / 10,000 / 3,000. NPV? ($)", type:"num", a:706, tol:15, why:"PV inflows 20,705.83 − 20,000 = $705.83. Accept."},
+  {t:"Project 2 (r=10%): −20,000 / 4,000 / 3,000 / 8,000 / 10,000. NPV? ($)", type:"num", a:-1044, tol:20, why:"PV inflows 18,956.36 − 20,000 = −$1,043.64. Reject."},
+  {t:"Project 3 (r=10%): −20,000 / 10,000 / 8,000 / 4,000 / 3,000. NPV? ($)", type:"num", a:757, tol:15, why:"PV inflows 20,756.78 − 20,000 = $756.78. Accept."},
+  // IRR
+  {t:"Project 1: IRR? (%)  −20,000 / 4,000 / 8,000 / 10,000 / 3,000", type:"num", a:9.56, tol:0.2, why:"IRR ≈ 9.56% > 8% → accept."},
+  {t:"Project 2: IRR? (%)  −20,000 / 4,000 / 3,000 / 8,000 / 10,000", type:"num", a:7.96, tol:0.2, why:"IRR ≈ 7.96% < 10% → reject."},
+  {t:"Project 3: IRR? (%)  −20,000 / 10,000 / 8,000 / 4,000 / 3,000", type:"num", a:12.18, tol:0.2, why:"IRR ≈ 12.18% > 10% → accept."},
+  // Payback
+  {t:"Project 1: Payback period? (years)", type:"num", a:2.80, tol:0.05, why:"2 + 8,000/10,000 = 2.80 yrs."},
+  {t:"Project 2: Payback period? (years)", type:"num", a:3.50, tol:0.05, why:"3 + 5,000/10,000 = 3.50 yrs."},
+  {t:"Project 3: Payback period? (years)", type:"num", a:2.50, tol:0.05, why:"2 + 2,000/4,000 = 2.50 yrs."},
+  // PI
+  {t:"Project 1: PI?  (PV inflows 20,705.83, cost 20,000)", type:"num", a:1.04, tol:0.02, why:"20,705.83 ÷ 20,000 = 1.04. Accept."},
+  {t:"Project 2: PI?  (PV inflows 18,956.36, cost 20,000)", type:"num", a:0.95, tol:0.02, why:"18,956.36 ÷ 20,000 = 0.95. Reject."},
+  {t:"Project 3: PI?  (PV inflows 20,756.78, cost 20,000)", type:"num", a:1.04, tol:0.02, why:"20,756.78 ÷ 20,000 = 1.04. Accept."},
+  // concepts
+  {t:"Which project should be REJECTED (all four rules fail)?", type:"mc", opts:["Project 1","Project 2","Project 3","None"], a:1, why:"Project 2: NPV −$1,044, IRR 7.96% < 10%, PI 0.95."},
   {t:"Which rule is the BEST because it shows dollars added to shareholder wealth?", type:"mc", opts:["Payback","IRR","NPV","PI"], a:2, why:"NPV is the best rule."},
   {t:"Which rule is MOST POPULAR (because we love %%%)?", type:"mc", opts:["NPV","IRR","Payback","PI"], a:1, why:"IRR — managers love a percentage."},
-  {t:"Accept a project by NPV when:", type:"mc", opts:["NPV > 0","NPV < 0","NPV = cost","NPV = IRR"], a:0, why:"Accept if NPV > 0."},
   {t:"Accept a project by IRR when:", type:"mc", opts:["IRR > 0","IRR > cost of capital","IRR < cost of capital","IRR = 0"], a:1, why:"Accept if IRR beats the cost of capital."},
   {t:"Accept a project by PI when:", type:"mc", opts:["PI > 0","PI > 1","PI < 1","PI = cost"], a:1, why:"PI cutoff is 1, not 0."},
   {t:"When cost of capital equals IRR, NPV is:", type:"mc", opts:["Positive","Negative","Zero","Undefined"], a:2, why:"At IRR, NPV = 0 by definition."},
@@ -520,7 +535,7 @@ function showQ(){
   if(q.type==="num"){
     inp.innerHTML=`<input id="numAns" type="text" inputmode="decimal" placeholder="type your answer"
       style="width:100%;padding:12px;border-radius:8px;border:1px solid #2b3a5c;background:#0d1b2a;color:#e8ecf3;font-size:1.05rem;font-family:monospace;">
-      <span style="color:#64748b;font-size:.8rem;">no $ or % sign needed</span>`;
+      <span style="color:#64748b;font-size:.8rem;">no $ or % sign needed · negatives OK</span>`;
     setTimeout(()=>document.getElementById("numAns").focus(),50);
   } else {
     inp.innerHTML=q.opts.map((o,i)=>
@@ -551,7 +566,7 @@ document.getElementById("submitAns").onclick=()=>{
   if(correct)qScore++;
   document.getElementById("qscore").textContent=`Score: ${qScore}`;
   const fb=document.getElementById("qfeedback");
-  const rightAns=q.type==="num" ? (q.a % 1===0 ? q.a.toString() : q.a.toString()) : q.opts[q.a];
+  const rightAns=q.type==="num" ? q.a.toString() : q.opts[q.a];
   fb.innerHTML=correct
     ? `<div class="final" style="background:#0d3b3b;">✓ Correct! (${rightAns})<br><span style="font-weight:400;color:#9fb3c8;">${q.why}</span></div>`
     : `<div class="final" style="background:#3b1e1e;border-color:#f87171;color:#fca5a5;">✗ You put ${given}. Correct: ${rightAns}<br><span style="font-weight:400;color:#cbd5e1;">${q.why}</span></div>`;
